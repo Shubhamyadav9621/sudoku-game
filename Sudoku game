@@ -1,0 +1,147 @@
+import java.util.Scanner;
+
+public class SudokuGame {
+    private int[][] grid;
+    private int[][] solution;
+
+    public SudokuGame() {
+        grid = new int[9][9];
+        solution = new int[9][9];
+    }
+
+    public void play() {
+        generateSolution();
+        generatePuzzle();
+
+        while (!isGameFinished()) {
+            displayGrid();
+            int row, col, value;
+
+            do {
+                System.out.print("Enter row (1-9): ");
+                row = getUserInput();
+                System.out.print("Enter column (1-9): ");
+                col = getUserInput();
+                System.out.print("Enter value (1-9): ");
+                value = getUserInput();
+
+                if (!isValidMove(row - 1, col - 1, value)) {
+                    System.out.println("Invalid move! Try again.");
+                }
+            } while (!isValidMove(row - 1, col - 1, value));
+
+            grid[row - 1][col - 1] = value;
+        }
+
+        System.out.println("Congratulations! You have solved the Sudoku puzzle.");
+    }
+
+    private void generateSolution() {
+        // Implement a Sudoku solving algorithm to generate a complete solution
+        // Here's a simple example of a solution for demonstration purposes
+        int[][] tempGrid = {
+                {5, 3, 4, 6, 7, 8, 9, 1, 2},
+                {6, 7, 2, 1, 9, 5, 3, 4, 8},
+                {1, 9, 8, 3, 4, 2, 5, 6, 7},
+                {8, 5, 9, 7, 6, 1, 4, 2, 3},
+                {4, 2, 6, 8, 5, 3, 7, 9, 1},
+                {7, 1, 3, 9, 2, 4, 8, 5, 6},
+                {9, 6, 1, 5, 3, 7, 2, 8, 4},
+                {2, 8, 7, 4, 1, 9, 6, 3, 5},
+                {3, 4, 5, 2, 8, 6, 1, 7, 9}
+        };
+        solution = tempGrid;
+    }
+
+    private void generatePuzzle() {
+        // Copy the solution grid to the puzzle grid and remove numbers based on the difficulty level
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                grid[i][j] = solution[i][j];
+            }
+        }
+
+        // Remove numbers based on the difficulty level
+        // Adjust the number of cells to remove for different difficulty levels
+        int cellsToRemove = 40; // Adjust this value for different difficulty levels
+        while (cellsToRemove > 0) {
+            int row = (int) (Math.random() * 9);
+            int col = (int) (Math.random() * 9);
+            if (grid[row][col] != 0) {
+                grid[row][col] = 0;
+                cellsToRemove--;
+            }
+        }
+    }
+
+    private void displayGrid() {
+        System.out.println("Sudoku Grid:");
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (grid[i][j] == 0) {
+                    System.out.print("_ ");
+                } else {
+                    System.out.print(grid[i][j] + " ");
+                }
+                if ((j + 1) % 3 == 0) {
+                    System.out.print("| ");
+                }
+            }
+            System.out.println();
+            if ((i + 1) % 3 == 0) {
+                System.out.println("-----------------------");
+            }
+        }
+    }
+
+    private int getUserInput() {
+        Scanner scanner = new Scanner(System.in);
+        return scanner.nextInt();
+    }
+
+    private boolean isValidMove(int row, int col, int value) {
+        // Check if the move is within the valid range of 1-9
+        if (value < 1 || value > 9) {
+            return false;
+        }
+
+        // Check if the move conflicts with existing numbers in the same row, column, or 3x3 sub-grid
+        for (int i = 0; i < 9; i++) {
+            if (grid[row][i] == value || grid[i][col] == value) {
+                return false;
+            }
+        }
+
+        int subGridStartRow = (row / 3) * 3;
+        int subGridStartCol = (col / 3) * 3;
+
+        for (int i = subGridStartRow; i < subGridStartRow + 3; i++) {
+            for (int j = subGridStartCol; j < subGridStartCol + 3; j++) {
+                if (grid[i][j] == value) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private boolean isGameFinished() {
+        // Check if the grid is completely filled and matches the solution
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (grid[i][j] == 0 || grid[i][j] != solution[i][j]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public static void main(String[] args) {
+        SudokuGame game = new SudokuGame();
+        game.play();
+    }
+}
+
+   
